@@ -22,6 +22,8 @@ from PySide6.QtWidgets import (QApplication, QFrame, QGroupBox, QHBoxLayout,
     QSizePolicy, QStatusBar, QTabWidget, QTableWidget,
     QTableWidgetItem, QTextEdit, QToolBar, QVBoxLayout,
     QWidget)
+
+from pyqtgraph import PlotWidget
 import resource_rc
 
 class Ui_MainWindow(object):
@@ -34,7 +36,13 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
         MainWindow.setSizePolicy(sizePolicy)
-        icon = QIcon(QIcon.fromTheme(u"application-x-executable"))
+        icon = QIcon()
+        iconThemeName = u"application-x-executable"
+        if QIcon.hasThemeIcon(iconThemeName):
+            icon = QIcon.fromTheme(iconThemeName)
+        else:
+            icon.addFile(u".", QSize(), QIcon.Normal, QIcon.Off)
+
         MainWindow.setWindowIcon(icon)
         MainWindow.setWindowOpacity(0.970000000000000)
         MainWindow.setTabShape(QTabWidget.Rounded)
@@ -243,6 +251,7 @@ class Ui_MainWindow(object):
         self.tabInstructions = QTabWidget(self.frame_8)
         self.tabInstructions.setObjectName(u"tabInstructions")
         self.tabInstructions.setGeometry(QRect(20, 10, 601, 371))
+        self.tabInstructions.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.InstructionStep1 = QWidget()
         self.InstructionStep1.setObjectName(u"InstructionStep1")
         self.groupBox = QGroupBox(self.InstructionStep1)
@@ -266,6 +275,9 @@ class Ui_MainWindow(object):
         self.tabInstructions.addTab(self.InstructionStep3, "")
         self.InstructionStep4 = QWidget()
         self.InstructionStep4.setObjectName(u"InstructionStep4")
+        self.graphWidget = PlotWidget(self.InstructionStep4)
+        self.graphWidget.setObjectName(u"graphWidget")
+        self.graphWidget.setGeometry(QRect(30, 50, 521, 251))
         self.tabInstructions.addTab(self.InstructionStep4, "")
         self.InstructionStep5 = QWidget()
         self.InstructionStep5.setObjectName(u"InstructionStep5")
@@ -577,7 +589,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         self.tabInputs.setCurrentIndex(0)
         self.technicianControls.setCurrentIndex(0)
-        self.tabInstructions.setCurrentIndex(0)
+        self.tabInstructions.setCurrentIndex(3)
         self.tabOutputs.setCurrentIndex(0)
         self.technicianView.setCurrentIndex(0)
 

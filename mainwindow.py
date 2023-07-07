@@ -1,11 +1,11 @@
 __appname__ = "Midmark"
 __module__ = "main"
-
+import numpy as np
 import time
-from PySide6.QtCore import Qt
-
+from PySide6.QtCore import Qt, QTimer
+from random import randint
 from PySide6.QtCore import * #Qt
-from PySide6.QtWidgets import QApplication, QMainWindow,QMessageBox,QTableWidgetItem, QWidget, QLabel, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow,QMessageBox,QTableWidgetItem, QWidget, QLabel, QFileDialog 
 from PySide6.QtGui import QPixmap
 import re
 import sqlite3
@@ -18,6 +18,9 @@ import csv
 import preferences
 import utilities
 from datetime import datetime
+#from pyqtgraph import PlotWidget, plot
+import pyqtgraph as pg
+import sys
 
 appDataPath = os.environ["APPDATA"] + "\\MidMark\\"
 
@@ -54,7 +57,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.workerThread = WorkerThread()
         #self.test1 = Step1()
         #self.test1 = Step1.Step1(self)
-        
+        self.x1 = 0
+        self.y1 = 0
         self.dbCursor = self.dbConn.cursor()
         self.dbCursor.execute("""CREATE TABLE IF NOT EXISTS MidmarkTable(id INTEGER PRIMARY KEY,
                               operatorName TEXT, operatorCode TEXT, serialNumber TEXT, workOrder TEXT, photo BLOB, time TEXT, Date TEXT)""")
@@ -88,11 +92,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.showToolbar = utilities.str2bool(self.settings.value("showToolbar",True))
         self.toolBar.setVisible(self.showToolbar) 
         self.load_initial_settings()
+        
+        #self.graphWidget = pg.PlotWidget()
+        
+       # self.plot([1,2,3,4,5,6,7,8,9,10], [30,32,34,32,33,31,29,32,35,45])
+        
+        self.x = list(range(100)) #100 points
+        self.y = [randint(0,100) for _ in range(100)]  # 100 data points
+
+        
+        self.graphWidget.setBackground('b')
+
+        
+       # self.data_line =  self.graphWidget.plot(self.x, self.y, pen=pen)
+        self.graphWidget.showGrid(x=True, y=True)
+        self.graphWidget.setTitle("Touch Screen", color="b", size="30pt")
+       
+        self.graphWidget.setLabel('left', "<span style=\"color:red;font-size:20px\">X</span>")
+        self.graphWidget.setLabel('bottom', "<span style=\"color:red;font-size:20px\">Y</span>")
+        
+        #hour = [1,2,3,4,5,6,7,8,9,10]
+        #temperature = [30,32,34,32,33,31,29,32,35,45]
+        #self.graphWidget.setBackground('w')
+        #self.graphWidget.plot(hour, temperature)
       #  self.triggerStep.connect(self.test1.trigger_test1)
        # self.ButtonNext.clicked.connect(self.test1.trigger_test1)
        # self.connect(self.workerThread, SIGNAL("threadDone()"), self.threadDone, Qt.DirectConnection)
         self.workerThread.myNextSignal.connect(self.threadDone)
-         
+        timer = QTimer(self)
+        
+        #self.timer = QtCore.QTimer()
+        self.connect(timer, SIGNAL("timeout()"), self.update_plot_data)
+        
+        timer.start(10)
+        
+        
+        
     def quit(self):
         self.app.quit()
     def copy(self):
@@ -120,6 +155,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def action_exit_triggered(self):
         #pass #self.closeEvent()
         self.quit()
+    
+    def update_plot_data(self):
+
+        #self.x = self.x[1:]  # Remove the first y element.
+        #self.x.append(self.x[-1] + 1)  # Add a new value 1 higher than the last.
+        
+
+        #self.y = self.y[1:]  # Remove the first
+        #self.y.append( randint(0,100))  # Add a new random value.
+
+        #self.data_line.setData(self.x, self.y)  # Update the data.    
+        
+        self.x1 = 10 * np.random.normal(size=1)
+        self.y1 = 10 * np.random.normal(size=1)
+        
+        if self.x1 <0:
+            self.x1 = self.x1 * -1
+        if self.y1 < 0:
+            self.y1 = self.y1 * -1
+        
+        if self.x1 > 20:
+            self.x1 = 20 
+        if self.y1 > 20:
+            self.y1 = 20    
+            
+        pen = pg.mkPen(color=(255, 0, 0), width = 4)
+        self.graphWidget.plot(self.x1, self.y1, pen=pen, symbol='o')
         
     def closeEvent(self, event, *args, **kwargs):
          result = QMessageBox.question(self, __appname__,"Are you sure you want ot exit?", QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
@@ -134,6 +196,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.technicianControls.setVisible(param)    
         self.settings.setValue("showToolbar",utilities.bool2str(param)) 
         #self.settings.setValue()
+        
+    def plot(self, hour, temperature):
+        #self.graphWidget.plot(hour, temperature)
+        self.graphWidget.setTitle("Your Title Here", color="b", size="30pt")
+        styles = {'color':'r', 'font-size':'20px'}
+        self.graphWidget.setLabel('left', "<span style=\"color:red;font-size:20px\">Temperature (°C)</span>")
+        self.graphWidget.setLabel('bottom', "<span style=\"color:red;font-size:20px\">Hour (H)</span>")
+        self.graphWidget.plot(hour, temperature)
+        self.graphWidget.showGrid(x=True, y=True)
+        
         
     def export_action_triggered(self):
         self.dbCursor.execute("SELECT * FROM MidmarkTable")

@@ -20,7 +20,8 @@
    <string>Midmark Sterilizer test system V1.0</string>
   </property>
   <property name="windowIcon">
-   <iconset theme="application-x-executable"/>
+   <iconset theme="application-x-executable">
+    <normaloff>.</normaloff>.</iconset>
   </property>
   <property name="windowOpacity">
    <double>0.970000000000000</double>
@@ -435,8 +436,11 @@
             <height>371</height>
            </rect>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="InstructionStep1">
            <attribute name="title">
@@ -505,6 +509,16 @@
            <attribute name="title">
             <string>InstructionStep4</string>
            </attribute>
+           <widget class="PlotWidget" name="graphWidget" native="true">
+            <property name="geometry">
+             <rect>
+              <x>30</x>
+              <y>50</y>
+              <width>521</width>
+              <height>251</height>
+             </rect>
+            </property>
+           </widget>
           </widget>
           <widget class="QWidget" name="InstructionStep5">
            <attribute name="title">
@@ -1309,6 +1323,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>operatorName</tabstop>
   <tabstop>operatorCode</tabstop>
