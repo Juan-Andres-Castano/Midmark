@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1284</width>
+    <width>1290</width>
     <height>922</height>
    </rect>
   </property>
@@ -440,7 +440,7 @@
            <string notr="true">background-color: rgb(255, 255, 255);</string>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="InstructionStep1">
            <attribute name="title">
@@ -524,6 +524,32 @@
            <attribute name="title">
             <string>InstructionStep5</string>
            </attribute>
+           <widget class="QPushButton" name="startButton">
+            <property name="geometry">
+             <rect>
+              <x>240</x>
+              <y>310</y>
+              <width>75</width>
+              <height>24</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>start</string>
+            </property>
+           </widget>
+           <widget class="QTextEdit" name="colorText">
+            <property name="geometry">
+             <rect>
+              <x>350</x>
+              <y>310</y>
+              <width>221</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(255, 255, 255);</string>
+            </property>
+           </widget>
           </widget>
          </widget>
         </widget>
@@ -1145,7 +1171,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1284</width>
+     <width>1290</width>
      <height>30</height>
     </rect>
    </property>

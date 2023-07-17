@@ -5,7 +5,7 @@ import time
 from PySide6.QtCore import Qt, QTimer
 from random import randint
 from PySide6.QtCore import * #Qt
-from PySide6.QtWidgets import QApplication, QMainWindow,QMessageBox,QTableWidgetItem, QWidget, QLabel, QFileDialog 
+from PySide6.QtWidgets import QApplication, QMainWindow,QMessageBox,QTableWidgetItem, QWidget, QLabel, QFileDialog , QVBoxLayout, QSlider
 from PySide6.QtGui import QPixmap
 import re
 import sqlite3
@@ -21,6 +21,9 @@ from datetime import datetime
 #from pyqtgraph import PlotWidget, plot
 import pyqtgraph as pg
 import sys
+from pyqtgraph import ImageView
+from models import Camera
+import cv2
 
 appDataPath = os.environ["APPDATA"] + "\\MidMark\\"
 
@@ -49,16 +52,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self,app, indexNumber):
         super().__init__()
         self.setupUi(self)
-        
+        self.cameraflag = 0
+        self.camera = Camera(0)
+        self.camera.initialize()
       #  logger.debug("Application initialized")
-        
+        #self.camera = camera
         self.app = app
         self.indexNumber = 0 #indexNumber
         self.workerThread = WorkerThread()
+        self.movie_thread = MovieThread(self.camera)
         #self.test1 = Step1()
         #self.test1 = Step1.Step1(self)
         self.x1 = 0
         self.y1 = 0
+        self.img_counter = 0
+        self.blue_done = 0
+        self.green_done = 0
+        self.red_done = 0
+        self.blueDetected  = 0
+        self.redDetected  = 0
+        self.greenDetected  = 0
         self.dbCursor = self.dbConn.cursor()
         self.dbCursor.execute("""CREATE TABLE IF NOT EXISTS MidmarkTable(id INTEGER PRIMARY KEY,
                               operatorName TEXT, operatorCode TEXT, serialNumber TEXT, workOrder TEXT, photo BLOB, time TEXT, Date TEXT)""")
@@ -111,6 +124,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.graphWidget.setLabel('left', "<span style=\"color:red;font-size:20px\">X</span>")
         self.graphWidget.setLabel('bottom', "<span style=\"color:red;font-size:20px\">Y</span>")
         
+        self.ImgWidget = ImageView()
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setRange(0,10)
+        self.layout = QVBoxLayout(self.InstructionStep5)
+        self.layout.addWidget(self.ImgWidget)
+        self.layout.addWidget(self.startButton)
+        
+        self.startButton.clicked.connect(self.start_movie)
+        
         #hour = [1,2,3,4,5,6,7,8,9,10]
         #temperature = [30,32,34,32,33,31,29,32,35,45]
         #self.graphWidget.setBackground('w')
@@ -118,17 +140,134 @@ class MainWindow(QMainWindow, Ui_MainWindow):
       #  self.triggerStep.connect(self.test1.trigger_test1)
        # self.ButtonNext.clicked.connect(self.test1.trigger_test1)
        # self.connect(self.workerThread, SIGNAL("threadDone()"), self.threadDone, Qt.DirectConnection)
-        self.workerThread.myNextSignal.connect(self.threadDone)
-        timer = QTimer(self)
+        self.connect(self.movie_thread, SIGNAL("threadDone()"), self.threadDone, Qt.DirectConnection)
+        #self.workerThread.myNextSignal.connect(self.threadDone)
+        self.slider.valueChanged.connect(self.update_brightness)
+
+        self.timer = QTimer(self)
         
         #self.timer = QtCore.QTimer()
-        self.connect(timer, SIGNAL("timeout()"), self.update_plot_data)
+        #self.connect(timer, SIGNAL("timeout()"), self.update_plot_data)
+        self.connect(self.timer, SIGNAL("timeout()"), self.update_movie)
         
-        timer.start(10)
+        #timer.start(1)
+        #timer.stop
         
         
+    def update_movie(self):
+        
+        #frame =[]
+        path = 'C:/MidmarkProject/camera'
+        if self.cameraflag ==1:
+            print("flag camera update movie  timer : %2d" % self.cameraflag)
+            self.ImgWidget.setImage(self.camera.last_frame.T)
+            frame = self.camera.get_myframe()
+
+            cv2.imshow("test", frame)
+        
+            b = frame[:, :, :1]
+            g = frame[:, :, 1:2]
+            r = frame[:, :, 2:]
+  
+            # computing the mean
+            b_mean = np.mean(b)
+            g_mean = np.mean(g)
+            r_mean = np.mean(r)
+    
+       # print(b_mean)
+       # print(g_mean)
+       # print(r_mean)
+    
+    # displaying the most prominent color
+            if (b_mean > g_mean and b_mean > r_mean):
+                if self.blue_done == 0:
+                    self.blue_done = 1
+                    
+                    print(b_mean)
+                    print(g_mean)
+                    print(r_mean)
+                    self.colorText.setText("blue")
+                    print("Blue")
+                    self.blueDetected  = 1
+                    
+                    
+                    img_name = "lcd_frame_blue_{}.png".format( int(self.serialNumber.text()) )
+                    cv2.imwrite(os.path.join(path , img_name), frame)
+                    cv2.imwrite(img_name, frame)
+                    #print("{} written!".format(img_name))
+            elif (g_mean > r_mean and g_mean > b_mean):
+                if self.green_done == 0:
+                    self.green_done = 1
+                    print(b_mean)
+                    print(g_mean)
+                    print(r_mean)
+                    self.colorText.setText("green")
+                    print("Green")
+                    self.greenDetected  = 1
+                    img_name = "lcd_frame_green_{}.png".format( int(self.serialNumber.text()) )
+                    cv2.imwrite(os.path.join(path , img_name), frame)
+                    
+                    cv2.imwrite(img_name, frame)
+                    #print("{} written!".format(img_name))
+            else:
+                if self.red_done == 0:
+                    self.red_done = 1
+                    print(b_mean)
+                    print(g_mean)
+                    print(r_mean)
+                
+                
+                    #img_name = "C:\Midmark\camera\lcd_frame_frame_red_{}.png".format(self.serialNumber )
+                    #img_name = "C:\Midmark\camera\lcd_frame_frame_red_{}.png"#.format((self.serialNumber.text()) )
+                    
+                    img_name = "lcd_frame_red_{}.png".format( int(self.serialNumber.text()) )
+                    cv2.imwrite(img_name, frame)
+                    cv2.imwrite(os.path.join(path , img_name), frame)
+                    
+                    #print("{} written!".format(img_name))
+                    self.colorText.setText("red")
+                    print("Red")
+                    self.redDetected  = 1
+        
+    def update_brightness(self, value):
+        value /= 10
+        self.camera.set_brightness(value)
+
+    def start_movie(self):
+        self.blue_done = 0
+        self.green_done = 0
+        self.red_done = 0
+        self.blueDetected  = 0
+        self.redDetected  = 0
+        self.greenDetected  = 0
+        self.colorText.setText("")
+        self.failButton.setStyleSheet("background-color: gray")
+        self.passButton.setStyleSheet("background-color: gray")
+
+        print("flag camera at buton start movie: %2d" % self.cameraflag)
+        self.timer.start(1)
+        
+        if self.cameraflag ==0:
+            self.cameraflag = 1
+           # self.movie_thread = MovieThread(self.camera)
+            self.movie_thread.start()
+
+         
+        else:
+            pass
+        #self.cameraflag = 0
+    #        self.camera.close_camera()
+      #      cv2.destroyAllWindows()
+       #     self.camera.close_camera()
+             
+            
+        #timer.start(5)
+        #self.update_timer.start(30)       
         
     def quit(self):
+        self.camera.close_camera()
+       # self.camera.close_camera()
+       # cv2.destroyAllWindows()
         self.app.quit()
     def copy(self):
         self.textEdit.copy()
@@ -154,6 +293,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def action_exit_triggered(self):
         #pass #self.closeEvent()
+        self.camera.close_camera()
+        
+        #cv2.destroyAllWindows()
         self.quit()
     
     def update_plot_data(self):
@@ -245,9 +387,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return False
         return True    
         
-    def threadDone(self, param):
+    def threadDone(self):  #,param
       #  pass
-        self.InstructionsText.setText("Instructions : " + str(param) )
+        self.cameraflag = 0
+        self.timer.stop()
+        
+        if ( (self.blueDetected  == 1) & (self.redDetected  == 1)& (self.greenDetected  == 1)):
+            self.passButton.setStyleSheet("background-color: green")
+            self.failButton.setStyleSheet("background-color: gray")
+        else:
+            self.passButton.setStyleSheet("background-color: gray")
+            self.failButton.setStyleSheet("background-color: red")
+            
+        print("flag camera at end of thread: %2d" % self.cameraflag)
+        #self.camera.close_camera()
+        #cv2.destroyAllWindows()
+      #  self.InstructionsText.setText("Instructions : " + str(param) )
         #QMessageBox.information(self,"Warning!", "worker thread execution completed")
         
   
@@ -274,7 +429,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     def repeat_test_clicked(self):
         currentRow = self.tableTests.currentRow()
-        print("prepeat test", currentRow)
+        print("repeat test", currentRow)
         if currentRow > -1:
             currentusername = (self.tableTests.item(currentRow,0).text(), )
             self.dbCursor.execute("""DELETE FROM MidmarkTable WHERE operatorName=?""", currentusername )
@@ -394,7 +549,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.triggerStep.emit(5)           
             print("preparing trigger step 1")    
         else:
-            self.workerThread.start()
+            pass
+            #self.workerThread.start()
         #QMessageBox.information(self,"Done!", "Done")
        # self.InstructionsText.setText("done")
         
@@ -414,3 +570,16 @@ class WorkerThread(QThread):
        # self.InstructionsText.setText("done")
         #self.emit(SIGNAL("threadDone()"))
               
+class MovieThread(QThread):
+    def __init__(self, camera):
+        super().__init__()
+        self.camera = camera
+
+    def run(self):
+        print( "run thread")
+        self.camera.acquire_movie(50)  
+        #self.cameraflag =0 
+        
+        self.emit(SIGNAL("threadDone()"))
+        #self.camera.close_camera()
+        #cv2.destroyAllWindows()          
