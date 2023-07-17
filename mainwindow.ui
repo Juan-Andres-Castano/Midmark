@@ -418,7 +418,7 @@
            <x>10</x>
            <y>10</y>
            <width>621</width>
-           <height>401</height>
+           <height>411</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -433,7 +433,7 @@
             <x>20</x>
             <y>10</y>
             <width>601</width>
-            <height>371</height>
+            <height>391</height>
            </rect>
           </property>
           <property name="styleSheet">
@@ -528,26 +528,13 @@
             <property name="geometry">
              <rect>
               <x>240</x>
-              <y>310</y>
+              <y>330</y>
               <width>75</width>
               <height>24</height>
              </rect>
             </property>
             <property name="text">
              <string>start</string>
-            </property>
-           </widget>
-           <widget class="QTextEdit" name="colorText">
-            <property name="geometry">
-             <rect>
-              <x>350</x>
-              <y>310</y>
-              <width>221</width>
-              <height>21</height>
-             </rect>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(255, 255, 255);</string>
             </property>
            </widget>
           </widget>
@@ -613,7 +600,7 @@
            <string>Comments for test</string>
           </property>
          </widget>
-         <widget class="QTextEdit" name="InstructionsText_2">
+         <widget class="QTextEdit" name="commentsText">
           <property name="geometry">
            <rect>
             <x>330</x>
@@ -698,7 +685,7 @@
           </rect>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="OutputStep1">
           <attribute name="title">
@@ -740,6 +727,45 @@
           <attribute name="title">
            <string>OutputStep5</string>
           </attribute>
+          <widget class="QTextEdit" name="colorBText">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>120</y>
+             <width>181</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
+          </widget>
+          <widget class="QTextEdit" name="colorGText">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>150</y>
+             <width>181</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
+          </widget>
+          <widget class="QTextEdit" name="colorRText">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>180</y>
+             <width>181</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
+          </widget>
          </widget>
         </widget>
         <widget class="QFrame" name="frame_10">
@@ -1090,16 +1116,6 @@
           </column>
           <column>
            <property name="text">
-            <string>photo</string>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>8</pointsize>
-            </font>
-           </property>
-          </column>
-          <column>
-           <property name="text">
             <string>Time</string>
            </property>
            <property name="font">
@@ -1111,6 +1127,36 @@
           <column>
            <property name="text">
             <string>Date</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>lcdR</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>lcdG</string>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>lcdB</string>
            </property>
            <property name="font">
             <font>
@@ -1360,19 +1406,19 @@
  <tabstops>
   <tabstop>operatorName</tabstop>
   <tabstop>operatorCode</tabstop>
-  <tabstop>lineEdit_3</tabstop>
-  <tabstop>tableTests</tabstop>
-  <tabstop>tabInstructions</tabstop>
-  <tabstop>tabOutputs</tabstop>
+  <tabstop>workOrder</tabstop>
+  <tabstop>serialNumber</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>InstructionsText_2</tabstop>
+  <tabstop>passButton</tabstop>
+  <tabstop>commentsText</tabstop>
   <tabstop>InstructionsText</tabstop>
   <tabstop>ButtonQuit</tabstop>
   <tabstop>failButton</tabstop>
-  <tabstop>passButton</tabstop>
   <tabstop>ButtonNext</tabstop>
+  <tabstop>tableTests</tabstop>
   <tabstop>tabInputs</tabstop>
   <tabstop>repeatButton</tabstop>
+  <tabstop>tabOutputs</tabstop>
   <tabstop>technicianView</tabstop>
   <tabstop>technicianControls</tabstop>
   <tabstop>canCommand1</tabstop>
@@ -1398,6 +1444,10 @@
   <tabstop>d6Output</tabstop>
   <tabstop>d7Output</tabstop>
   <tabstop>canIdOuput</tabstop>
+  <tabstop>lineEdit_3</tabstop>
+  <tabstop>tabInstructions</tabstop>
+  <tabstop>startButton</tabstop>
+  <tabstop>colorRText</tabstop>
  </tabstops>
  <resources>
   <include location="resource.qrc"/>

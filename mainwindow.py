@@ -5,7 +5,7 @@ import time
 from PySide6.QtCore import Qt, QTimer
 from random import randint
 from PySide6.QtCore import * #Qt
-from PySide6.QtWidgets import QApplication, QMainWindow,QMessageBox,QTableWidgetItem, QWidget, QLabel, QFileDialog , QVBoxLayout, QSlider
+from PySide6.QtWidgets import QApplication, QMainWindow,QMessageBox,QTableWidgetItem, QWidget, QLabel, QFileDialog , QVBoxLayout, QSlider, QHBoxLayout
 from PySide6.QtGui import QPixmap
 import re
 import sqlite3
@@ -72,9 +72,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.blueDetected  = 0
         self.redDetected  = 0
         self.greenDetected  = 0
+        self.lcdTest = ""
         self.dbCursor = self.dbConn.cursor()
         self.dbCursor.execute("""CREATE TABLE IF NOT EXISTS MidmarkTable(id INTEGER PRIMARY KEY,
-                              operatorName TEXT, operatorCode TEXT, serialNumber TEXT, workOrder TEXT, photo BLOB, time TEXT, Date TEXT)""")
+                              operatorName TEXT, operatorCode TEXT, serialNumber TEXT, workOrder TEXT, time TEXT, Date TEXT, photoR BLOB, photoG BLOB, photoB BLOB, step2 TEXT, step3 TEXT, step4 TEXT, comments TEXT)""")
         #, , testcanbus TEXT, testtouch TEXT, testrgb TEXT 
         
         
@@ -130,6 +131,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.layout = QVBoxLayout(self.InstructionStep5)
         self.layout.addWidget(self.ImgWidget)
         self.layout.addWidget(self.startButton)
+        #self.layouth  = QHBoxLayout(self.InstructionStep5)
+
+        #self.layouth.addWidget(self.colorBText)
+        #self.layouth.addWidget(self.colorRText)
+        #3self.layouth.addWidget(self.colorGText)
+        #self.layout.addLayout(self.layouth)
+        
+        
+        
         
         self.startButton.clicked.connect(self.start_movie)
         
@@ -177,6 +187,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
        # print(b_mean)
        # print(g_mean)
        # print(r_mean)
+            #self.colorRText.setText("FAIL")
+            #3self.colorGText.setText("FAIL")
+            #self.colorBText.setText("FAIL")
     
     # displaying the most prominent color
             if (b_mean > g_mean and b_mean > r_mean):
@@ -186,12 +199,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     print(b_mean)
                     print(g_mean)
                     print(r_mean)
-                    self.colorText.setText("blue")
+                    
                     print("Blue")
                     self.blueDetected  = 1
                     
                     
-                    img_name = "lcd_frame_blue_{}.png".format( int(self.serialNumber.text()) )
+                    img_name = "lcd_frame_blue_{}.jpg".format( (self.serialNumber.text()) )
+                    self.colorBText.setText(img_name)
+                    
                     cv2.imwrite(os.path.join(path , img_name), frame)
                     cv2.imwrite(img_name, frame)
                     #print("{} written!".format(img_name))
@@ -201,14 +216,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     print(b_mean)
                     print(g_mean)
                     print(r_mean)
-                    self.colorText.setText("green")
+                    #self.colorText.setText("green")
                     print("Green")
                     self.greenDetected  = 1
-                    img_name = "lcd_frame_green_{}.png".format( int(self.serialNumber.text()) )
+                    img_name = "lcd_frame_green_{}.jpg".format( (self.serialNumber.text()) )
                     cv2.imwrite(os.path.join(path , img_name), frame)
+                    self.colorGText.setText(img_name)
                     
                     cv2.imwrite(img_name, frame)
-                    #print("{} written!".format(img_name))
+                    print("{} written!".format(img_name))
             else:
                 if self.red_done == 0:
                     self.red_done = 1
@@ -216,18 +232,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     print(g_mean)
                     print(r_mean)
                 
-                
+                    #self.colorText.setText("red")
+                    print("Red")
+                    self.redDetected  = 1
                     #img_name = "C:\Midmark\camera\lcd_frame_frame_red_{}.png".format(self.serialNumber )
                     #img_name = "C:\Midmark\camera\lcd_frame_frame_red_{}.png"#.format((self.serialNumber.text()) )
                     
-                    img_name = "lcd_frame_red_{}.png".format( int(self.serialNumber.text()) )
+                    img_name = "lcd_frame_red_{}.jpg".format( (self.serialNumber.text()) )
                     cv2.imwrite(img_name, frame)
                     cv2.imwrite(os.path.join(path , img_name), frame)
+                    self.colorRText.setText(img_name)
                     
                     #print("{} written!".format(img_name))
-                    self.colorText.setText("red")
-                    print("Red")
-                    self.redDetected  = 1
+
         
     def update_brightness(self, value):
         value /= 10
@@ -240,7 +257,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.blueDetected  = 0
         self.redDetected  = 0
         self.greenDetected  = 0
-        self.colorText.setText("")
+        self.colorRText.setText("")
+        self.colorBText.setText("")
+        self.colorGText.setText("")
         self.failButton.setStyleSheet("background-color: gray")
         self.passButton.setStyleSheet("background-color: gray")
 
@@ -393,12 +412,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.timer.stop()
         
         if ( (self.blueDetected  == 1) & (self.redDetected  == 1)& (self.greenDetected  == 1)):
+            self.lcdTest = "PASS"
+            
             self.passButton.setStyleSheet("background-color: green")
             self.failButton.setStyleSheet("background-color: gray")
         else:
+            self.lcdTest = "FAIL"
             self.passButton.setStyleSheet("background-color: gray")
             self.failButton.setStyleSheet("background-color: red")
             
+            
+        print(self.lcdTest)    
         print("flag camera at end of thread: %2d" % self.cameraflag)
         #self.camera.close_camera()
         #cv2.destroyAllWindows()
@@ -418,13 +442,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.tableTests.setItem(index, 2, QTableWidgetItem(row[3]))
             self.tableTests.setItem(index, 3, QTableWidgetItem(row[4]))
             
-            itemImageI = self.getImageLabel(row[5])
-            self.tableTests.setCellWidget(index,4, itemImageI  )
+
             
-            self.tableTests.setItem(index, 4, QTableWidgetItem(row[6]))            
-            self.tableTests.setItem(index, 5, QTableWidgetItem(row[7]))
+            self.tableTests.setItem(index, 4, QTableWidgetItem(row[5]))            
+            self.tableTests.setItem(index, 5, QTableWidgetItem(row[6]))
             
+            itemImageI = self.getImageLabel(row[7])
+            self.tableTests.setCellWidget(index,6, itemImageI  )
             
+            itemImageI1 = self.getImageLabel(row[8])
+            self.tableTests.setCellWidget(index,7, itemImageI1  )
+            
+            itemImageI2 = self.getImageLabel(row[9])
+            self.tableTests.setCellWidget(index,8, itemImageI2  )
+            
+            self.tableTests.setItem(index, 9, QTableWidgetItem(row[10]))            
+            self.tableTests.setItem(index, 10, QTableWidgetItem(row[11]))
+            self.tableTests.setItem(index, 11, QTableWidgetItem(row[12]))            
+            self.tableTests.setItem(index, 12, QTableWidgetItem(row[13]))
             
         
     def repeat_test_clicked(self):
@@ -468,7 +503,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
     
     def manageTabs(self):
-        self.indexNumber = self.indexNumber + 1
+        print("entrando")
+        self.indexNumber = 4 #self.indexNumber + 1
         if self.indexNumber > 4:
             self.indexNumber = 0
             
@@ -480,6 +516,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #    return False
         
         if self.indexNumber == 1:
+            print(self.indexNumber)   
             test1 = Step1.Step1(self)
 
            # sig1 = test2.myInstructionSignal
@@ -492,6 +529,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.triggerStep.emit(5)           
             print("preparing trigger step 1")
             
+
+            
+
+            
+            
+            
+            
+        elif self.indexNumber == 2:
+            print(self.indexNumber)   
+            test2 = Step2.Step2(self)
+
+           # sig1 = test2.myInstructionSignal
+            self.triggerStep.connect(test2.trigger_test2)     
+
+
+            sig = test2.myInstructionSignal
+            sig.connect(self.displayInstructionText)
+            
+            self.triggerStep.emit(5)           
+            print("preparing trigger step 1")    
+        elif self.indexNumber == 4:
+            print("starting")  
+            print(self.indexNumber)   
             operatorName = self.operatorName.text()
             operatorCode = self.operatorCode.text()
             serialNumber = self.serialNumber.text()
@@ -514,40 +574,85 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current_time = now.strftime("%H:%M:%S")
             current_date = datetime.today().strftime('%Y-%m-%d')
             
-            self.tableTests.setItem(currentRowcount,5, QTableWidgetItem(current_time))
-            self.tableTests.setItem(currentRowcount,6, QTableWidgetItem(current_date))
+            self.tableTests.setItem(currentRowcount,4, QTableWidgetItem(current_time))
+            self.tableTests.setItem(currentRowcount,5, QTableWidgetItem(current_date))
             
             #str(bool)
-            photoTest =  "C:\Midmark\camera\photo1.jpg"
-            imageTest =   self.convertToBinaryData(photoTest)
+            #photoTest =  "C:\Midmark\camera\photo1.jpg"
+            
+            #mage = "lcd_frame_green_{}.png".format( (self.serialNumber.text()) )
+            image = self.colorRText.toPlainText()
+            if image == "":
+                imageR = None
+            else:
+                        
+                photoTest = os.path.join('C:/MidmarkProject/camera/', image)
+            
+                #photoTest  =   "C:\Midmark\camera\".format(image)  
+            
+                imageR =   self.convertToBinaryData(photoTest)
+                itemImage = self.getImageLabel(imageR)
+                self.tableTests.setCellWidget(currentRowcount,6,  itemImage )
+                
+            
+            image = self.colorGText.toPlainText()
+            
+            if image == "":
+                imageG = None
+            else:
+                        
+                photoTest = os.path.join('C:/MidmarkProject/camera/', image)
+            
+                #photoTest  =   "C:\Midmark\camera\".format(image)  
+            
+                imageG =   self.convertToBinaryData(photoTest)
+                itemImage = self.getImageLabel(imageG)
+                self.tableTests.setCellWidget(currentRowcount,7,  itemImage )
+                
+                
+            image = self.colorBText.toPlainText()
+            
+            if image == "":
+                imageB = None
+            else:
+                        
+                photoTest = os.path.join('C:/MidmarkProject/camera/', image)
+            
+                #photoTest  =   "C:\Midmark\camera\".format(image)  
+            
+                imageB =   self.convertToBinaryData(photoTest)
+                itemImage = self.getImageLabel(imageB)
+                self.tableTests.setCellWidget(currentRowcount,8,  itemImage )
             
             
             
-            itemImage = self.getImageLabel(imageTest)
-            self.tableTests.setCellWidget(currentRowcount,4,  itemImage )
             
             
-            parameters = (None, operatorName, operatorCode, serialNumber, workOrder, imageTest, current_time, current_date )   
-            self.dbCursor.execute('''INSERT INTO MidmarkTable VALUES (?, ?, ?, ?, ?, ?, ?, ?)''', parameters)
+            
+
+            
+            
+            
+            comments = self.commentsText.toPlainText()
+            
+            test4Result = self.lcdTest
+            
+            test3Result = "PASS"
+            print(test3Result)
+            test2Result = "PASS"
+            print(test2Result)
+            
+            self.tableTests.setItem(currentRowcount,9, QTableWidgetItem(test2Result))
+            self.tableTests.setItem(currentRowcount,10, QTableWidgetItem(test3Result))
+            
+            self.tableTests.setItem(currentRowcount,11, QTableWidgetItem(test4Result))
+            self.tableTests.setItem(currentRowcount,12, QTableWidgetItem(comments))
+            
+            parameters = (None, operatorName, operatorCode, serialNumber, workOrder, current_time, current_date, imageR, imageG, imageB, test2Result, test3Result, test4Result, comments )   
+            self.dbCursor.execute('''INSERT INTO MidmarkTable VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?)''', parameters)
             self.dbConn.commit()
+            print("finishing")   
             
-
-            
-            
-            
-            
-        elif self.indexNumber == 2:
-            test2 = Step2.Step2(self)
-
-           # sig1 = test2.myInstructionSignal
-            self.triggerStep.connect(test2.trigger_test2)     
-
-
-            sig = test2.myInstructionSignal
-            sig.connect(self.displayInstructionText)
-            
-            self.triggerStep.emit(5)           
-            print("preparing trigger step 1")    
         else:
             pass
             #self.workerThread.start()
@@ -577,7 +682,7 @@ class MovieThread(QThread):
 
     def run(self):
         print( "run thread")
-        self.camera.acquire_movie(50)  
+        self.camera.acquire_movie(100)  
         #self.cameraflag =0 
         
         self.emit(SIGNAL("threadDone()"))

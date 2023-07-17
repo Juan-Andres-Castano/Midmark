@@ -245,12 +245,12 @@ class Ui_MainWindow(object):
         self.ButtonQuit.setGeometry(QRect(20, 680, 101, 51))
         self.frame_8 = QFrame(self.frame_2)
         self.frame_8.setObjectName(u"frame_8")
-        self.frame_8.setGeometry(QRect(10, 10, 621, 401))
+        self.frame_8.setGeometry(QRect(10, 10, 621, 411))
         self.frame_8.setFrameShape(QFrame.StyledPanel)
         self.frame_8.setFrameShadow(QFrame.Raised)
         self.tabInstructions = QTabWidget(self.frame_8)
         self.tabInstructions.setObjectName(u"tabInstructions")
-        self.tabInstructions.setGeometry(QRect(20, 10, 601, 371))
+        self.tabInstructions.setGeometry(QRect(20, 10, 601, 391))
         self.tabInstructions.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.InstructionStep1 = QWidget()
         self.InstructionStep1.setObjectName(u"InstructionStep1")
@@ -283,11 +283,7 @@ class Ui_MainWindow(object):
         self.InstructionStep5.setObjectName(u"InstructionStep5")
         self.startButton = QPushButton(self.InstructionStep5)
         self.startButton.setObjectName(u"startButton")
-        self.startButton.setGeometry(QRect(240, 310, 75, 24))
-        self.colorText = QTextEdit(self.InstructionStep5)
-        self.colorText.setObjectName(u"colorText")
-        self.colorText.setGeometry(QRect(350, 310, 221, 21))
-        self.colorText.setStyleSheet(u"background-color: rgb(255, 255, 255);")
+        self.startButton.setGeometry(QRect(240, 330, 75, 24))
         self.tabInstructions.addTab(self.InstructionStep5, "")
         self.frame_7 = QFrame(self.frame_2)
         self.frame_7.setObjectName(u"frame_7")
@@ -306,10 +302,10 @@ class Ui_MainWindow(object):
         self.label_5.setObjectName(u"label_5")
         self.label_5.setGeometry(QRect(330, 10, 151, 16))
         self.label_5.setStyleSheet(u"background-color: rgb(255, 255, 255);")
-        self.InstructionsText_2 = QTextEdit(self.frame_7)
-        self.InstructionsText_2.setObjectName(u"InstructionsText_2")
-        self.InstructionsText_2.setGeometry(QRect(330, 30, 281, 141))
-        self.InstructionsText_2.setStyleSheet(u"background-color: rgb(255, 255, 255);")
+        self.commentsText = QTextEdit(self.frame_7)
+        self.commentsText.setObjectName(u"commentsText")
+        self.commentsText.setGeometry(QRect(330, 30, 281, 141))
+        self.commentsText.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.horizontalLayoutWidget = QWidget(self.frame_2)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
         self.horizontalLayoutWidget.setGeometry(QRect(30, 430, 601, 31))
@@ -358,6 +354,18 @@ class Ui_MainWindow(object):
         self.tabOutputs.addTab(self.OutputStep4, "")
         self.OutputStep5 = QWidget()
         self.OutputStep5.setObjectName(u"OutputStep5")
+        self.colorBText = QTextEdit(self.OutputStep5)
+        self.colorBText.setObjectName(u"colorBText")
+        self.colorBText.setGeometry(QRect(20, 120, 181, 21))
+        self.colorBText.setStyleSheet(u"background-color: rgb(255, 255, 255);")
+        self.colorGText = QTextEdit(self.OutputStep5)
+        self.colorGText.setObjectName(u"colorGText")
+        self.colorGText.setGeometry(QRect(20, 150, 181, 21))
+        self.colorGText.setStyleSheet(u"background-color: rgb(255, 255, 255);")
+        self.colorRText = QTextEdit(self.OutputStep5)
+        self.colorRText.setObjectName(u"colorRText")
+        self.colorRText.setGeometry(QRect(20, 180, 181, 21))
+        self.colorRText.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.tabOutputs.addTab(self.OutputStep5, "")
         self.frame_10 = QFrame(self.frame_3)
         self.frame_10.setObjectName(u"frame_10")
@@ -451,8 +459,8 @@ class Ui_MainWindow(object):
         self.verticalLayout = QVBoxLayout(self.tabData)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.tableTests = QTableWidget(self.tabData)
-        if (self.tableTests.columnCount() < 11):
-            self.tableTests.setColumnCount(11)
+        if (self.tableTests.columnCount() < 13):
+            self.tableTests.setColumnCount(13)
         font = QFont()
         font.setPointSize(8)
         __qtablewidgetitem = QTableWidgetItem()
@@ -488,6 +496,12 @@ class Ui_MainWindow(object):
         __qtablewidgetitem10 = QTableWidgetItem()
         __qtablewidgetitem10.setFont(font);
         self.tableTests.setHorizontalHeaderItem(10, __qtablewidgetitem10)
+        __qtablewidgetitem11 = QTableWidgetItem()
+        __qtablewidgetitem11.setFont(font);
+        self.tableTests.setHorizontalHeaderItem(11, __qtablewidgetitem11)
+        __qtablewidgetitem12 = QTableWidgetItem()
+        __qtablewidgetitem12.setFont(font);
+        self.tableTests.setHorizontalHeaderItem(12, __qtablewidgetitem12)
         self.tableTests.setObjectName(u"tableTests")
         self.tableTests.setFont(font)
         self.tableTests.setAutoFillBackground(True)
@@ -526,20 +540,20 @@ class Ui_MainWindow(object):
         self.toolBar.setMovable(True)
         MainWindow.addToolBar(Qt.TopToolBarArea, self.toolBar)
         QWidget.setTabOrder(self.operatorName, self.operatorCode)
-        QWidget.setTabOrder(self.operatorCode, self.lineEdit_3)
-        QWidget.setTabOrder(self.lineEdit_3, self.tableTests)
-        QWidget.setTabOrder(self.tableTests, self.tabInstructions)
-        QWidget.setTabOrder(self.tabInstructions, self.tabOutputs)
-        QWidget.setTabOrder(self.tabOutputs, self.tabWidget)
-        QWidget.setTabOrder(self.tabWidget, self.InstructionsText_2)
-        QWidget.setTabOrder(self.InstructionsText_2, self.InstructionsText)
+        QWidget.setTabOrder(self.operatorCode, self.workOrder)
+        QWidget.setTabOrder(self.workOrder, self.serialNumber)
+        QWidget.setTabOrder(self.serialNumber, self.tabWidget)
+        QWidget.setTabOrder(self.tabWidget, self.passButton)
+        QWidget.setTabOrder(self.passButton, self.commentsText)
+        QWidget.setTabOrder(self.commentsText, self.InstructionsText)
         QWidget.setTabOrder(self.InstructionsText, self.ButtonQuit)
         QWidget.setTabOrder(self.ButtonQuit, self.failButton)
-        QWidget.setTabOrder(self.failButton, self.passButton)
-        QWidget.setTabOrder(self.passButton, self.ButtonNext)
-        QWidget.setTabOrder(self.ButtonNext, self.tabInputs)
+        QWidget.setTabOrder(self.failButton, self.ButtonNext)
+        QWidget.setTabOrder(self.ButtonNext, self.tableTests)
+        QWidget.setTabOrder(self.tableTests, self.tabInputs)
         QWidget.setTabOrder(self.tabInputs, self.repeatButton)
-        QWidget.setTabOrder(self.repeatButton, self.technicianView)
+        QWidget.setTabOrder(self.repeatButton, self.tabOutputs)
+        QWidget.setTabOrder(self.tabOutputs, self.technicianView)
         QWidget.setTabOrder(self.technicianView, self.technicianControls)
         QWidget.setTabOrder(self.technicianControls, self.canCommand1)
         QWidget.setTabOrder(self.canCommand1, self.canCommand2)
@@ -564,6 +578,10 @@ class Ui_MainWindow(object):
         QWidget.setTabOrder(self.d3Output, self.d6Output)
         QWidget.setTabOrder(self.d6Output, self.d7Output)
         QWidget.setTabOrder(self.d7Output, self.canIdOuput)
+        QWidget.setTabOrder(self.canIdOuput, self.lineEdit_3)
+        QWidget.setTabOrder(self.lineEdit_3, self.tabInstructions)
+        QWidget.setTabOrder(self.tabInstructions, self.startButton)
+        QWidget.setTabOrder(self.startButton, self.colorRText)
 
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuEdit.menuAction())
@@ -597,7 +615,7 @@ class Ui_MainWindow(object):
         self.tabInputs.setCurrentIndex(0)
         self.technicianControls.setCurrentIndex(0)
         self.tabInstructions.setCurrentIndex(4)
-        self.tabOutputs.setCurrentIndex(0)
+        self.tabOutputs.setCurrentIndex(4)
         self.technicianView.setCurrentIndex(0)
 
 
@@ -686,19 +704,23 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem3 = self.tableTests.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Work_Order", None));
         ___qtablewidgetitem4 = self.tableTests.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"photo", None));
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Time", None));
         ___qtablewidgetitem5 = self.tableTests.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Time", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Date", None));
         ___qtablewidgetitem6 = self.tableTests.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Date", None));
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"lcdR", None));
         ___qtablewidgetitem7 = self.tableTests.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"Step 2.CAN_bus ", None));
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"lcdG", None));
         ___qtablewidgetitem8 = self.tableTests.horizontalHeaderItem(8)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"Step 3.Touch_Screen", None));
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"lcdB", None));
         ___qtablewidgetitem9 = self.tableTests.horizontalHeaderItem(9)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"Step 4.RGB_on_LCD", None));
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"Step 2.CAN_bus ", None));
         ___qtablewidgetitem10 = self.tableTests.horizontalHeaderItem(10)
-        ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"Comments", None));
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"Step 3.Touch_Screen", None));
+        ___qtablewidgetitem11 = self.tableTests.horizontalHeaderItem(11)
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("MainWindow", u"Step 4.RGB_on_LCD", None));
+        ___qtablewidgetitem12 = self.tableTests.horizontalHeaderItem(12)
+        ___qtablewidgetitem12.setText(QCoreApplication.translate("MainWindow", u"Comments", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabData), QCoreApplication.translate("MainWindow", u"Data", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuEdit.setTitle(QCoreApplication.translate("MainWindow", u"Edit", None))
